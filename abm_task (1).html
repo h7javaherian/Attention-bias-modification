@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attention Bias Modification Task</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f8f8f8;color:#1a1a2e;padding:1rem}
+.screen{display:none;padding:2rem;max-width:700px;margin:0 auto}
+.screen.active{display:block}
+.card{background:#fff;border:0.5px solid #ddd;border-radius:12px;padding:1.5rem;margin-bottom:1rem}
+.btn{display:inline-block;padding:10px 24px;border:0.5px solid #ccc;border-radius:8px;background:transparent;color:#1a1a2e;font-size:14px;cursor:pointer;font-family:Arial,sans-serif;transition:background 0.15s}
+.btn:hover{background:#f0f0f0}
+.btn-primary{background:#dbeafe;border-color:#93c5fd;color:#1d4ed8}
+.btn-primary:hover{opacity:0.85}
+.stat{background:#f5f5f5;border-radius:8px;padding:1rem;text-align:center}
+.stat-label{font-size:12px;color:#666;margin-bottom:4px}
+.stat-value{font-size:22px;font-weight:500;color:#1a1a2e}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.badge{display:inline-block;font-size:11px;padding:3px 10px;border-radius:8px;font-weight:500}
+.badge-info{background:#dbeafe;color:#1d4ed8}
+.badge-success{background:#dcfce7;color:#166534}
+.badge-warn{background:#fef9c3;color:#854d0e}
+input[type=text],input[type=number],select{width:100%;padding:8px 12px;border:0.5px solid #ccc;border-radius:8px;font-family:Arial,sans-serif;font-size:14px;background:#fff;color:#1a1a2e;margin-top:4px}
+label{font-size:13px;color:#666;display:block;margin-bottom:12px}
+h1{font-size:22px;font-weight:500;margin-bottom:0.5rem;color:#1a1a2e}
+h2{font-size:18px;font-weight:500;margin-bottom:1rem;color:#1a1a2e}
+h3{font-size:15px;font-weight:500;margin-bottom:0.5rem;color:#1a1a2e}
+p{font-size:14px;color:#555;line-height:1.6;margin-bottom:0.75rem}
+.divider{border:none;border-top:0.5px solid #ddd;margin:1.25rem 0}
+#task-area{position:relative;background:#f5f5f5;border:0.5px solid #ddd;border-radius:12px;width:100%;height:340px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;overflow:hidden}
+.fixation{font-size:32px;font-weight:400;color:#888;position:absolute}
+.face-stimulus{position:absolute;width:90px;height:110px;border-radius:50% 50% 45% 45%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:500;border:2px solid transparent;user-select:none}
+.face-left{left:140px}
+.face-right{right:140px}
+.probe{position:absolute;font-size:28px;cursor:pointer;color:#1a1a2e;font-weight:400;user-select:none}
+.probe-left{left:175px}
+.probe-right{right:175px}
+.key-btn{display:inline-flex;align-items:center;justify-content:center;width:64px;height:48px;border:0.5px solid #ccc;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;background:transparent;color:#1a1a2e;font-family:Arial,sans-serif;transition:background 0.1s}
+.key-btn:active,.key-btn.pressed{background:#dbeafe;color:#1d4ed8}
+.progress-bar{width:100%;height:6px;background:#e5e5e5;border-radius:3px;overflow:hidden;margin-bottom:0.5rem}
+.progress-fill{height:100%;background:#93c5fd;transition:width 0.3s}
+#feedback-msg{font-size:13px;color:#666;text-align:center;min-height:20px;margin-top:8px}
+.tab-nav{display:flex;gap:8px;margin-bottom:1.5rem;border-bottom:0.5px solid #ddd;padding-bottom:0}
+.tab{padding:8px 16px;font-size:13px;cursor:pointer;border:none;background:none;color:#666;font-family:Arial,sans-serif;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tab.active{color:#1d4ed8;border-bottom-color:#93c5fd}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.trial-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:0.5px solid #eee;font-size:13px}
+.trial-row:last-child{border-bottom:none}
+</style>
+</head>
+<body>
+
+<div id="s-welcome" class="screen active">
+  <div style="text-align:center;padding:1rem 0 1.5rem">
+    <div style="font-size:40px;margin-bottom:1rem">🧠</div>
+    <h1>Attention Bias Modification</h1>
+    <p style="text-align:center">Dot probe task with emotional face stimuli</p>
+    <div style="display:flex;gap:8px;justify-content:center;margin:1rem 0">
+      <span class="badge badge-info">Assessment</span>
+      <span class="badge badge-success">Training (ABM)</span>
+      <span class="badge badge-warn">Research export</span>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Participant details</h3>
+    <label>Participant ID<input type="text" id="pid" placeholder="e.g. P001"></label>
+    <label>Age<input type="number" id="page" placeholder="e.g. 24" min="18" max="99"></label>
+    <label>Gender
+      <select id="pgender">
+        <option value="">Select...</option>
+        <option>Female</option><option>Male</option><option>Non-binary</option><option>Prefer not to say</option>
+      </select>
+    </label>
+  </div>
+  <div class="card">
+    <h3>Session settings</h3>
+    <label>Session type
+      <select id="stype">
+        <option value="assess">Assessment only (no bias correction)</option>
+        <option value="abm">ABM training (probe always opposite threat)</option>
+        <option value="both">Assessment + ABM training</option>
+      </select>
+    </label>
+    <label>SOA - stimulus onset asynchrony
+      <select id="soa">
+        <option value="500">500 ms (standard)</option>
+        <option value="1000">1000 ms (extended)</option>
+        <option value="200">200 ms (brief)</option>
+      </select>
+    </label>
+    <label>Number of trials
+      <select id="ntrials">
+        <option value="24">24 trials (demo)</option>
+        <option value="48">48 trials (short)</option>
+        <option value="96">96 trials (standard)</option>
+      </select>
+    </label>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:0.5rem">
+    <button class="btn btn-primary" onclick="startInstructions()" style="flex:1">Continue to instructions</button>
+    <button class="btn" onclick="showScreen('s-results')" style="flex:0">View data</button>
+  </div>
+</div>
+
+<div id="s-instructions" class="screen">
+  <h2>How this task works</h2>
+  <div class="card">
+    <h3>Step 1 - fixation cross</h3>
+    <p>A <strong>+</strong> cross appears in the centre of the screen. Keep your eyes focused on it.</p>
+  </div>
+  <div class="card">
+    <h3>Step 2 - face pair</h3>
+    <p>Two faces appear side by side - one with a threatening expression and one with a neutral expression. They disappear after a brief interval.</p>
+  </div>
+  <div class="card">
+    <h3>Step 3 - probe</h3>
+    <p>A probe symbol (&#9670; or &#9671;) appears where one of the faces was. Press <kbd style="background:#f0f0f0;padding:2px 6px;border-radius:4px;font-size:12px">F</kbd> if it appeared on the <strong>left</strong>, or <kbd style="background:#f0f0f0;padding:2px 6px;border-radius:4px;font-size:12px">J</kbd> if on the <strong>right</strong>.</p>
+  </div>
+  <div class="card" style="background:#f5f5f5">
+    <h3>Key mapping</h3>
+    <div style="display:flex;gap:24px;justify-content:center;margin-top:0.5rem">
+      <div style="text-align:center"><div style="font-size:24px;margin-bottom:4px">&#9670;/&#9671;</div><div style="font-size:12px;color:#666">Left side</div><div style="margin-top:6px"><kbd style="background:#fff;border:0.5px solid #ccc;padding:4px 12px;border-radius:4px;font-size:16px;font-weight:500">F</kbd></div></div>
+      <div style="text-align:center"><div style="font-size:24px;margin-bottom:4px">&#9670;/&#9671;</div><div style="font-size:12px;color:#666">Right side</div><div style="margin-top:6px"><kbd style="background:#fff;border:0.5px solid #ccc;padding:4px 12px;border-radius:4px;font-size:16px;font-weight:500">J</kbd></div></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:0.5rem">
+    <button class="btn" onclick="showScreen('s-welcome')" style="flex:0">Back</button>
+    <button class="btn btn-primary" onclick="startPractice()" style="flex:1">Start practice (3 trials)</button>
+  </div>
+</div>
+
+<div id="s-task" class="screen">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem">
+    <span style="font-size:13px;color:#666" id="trial-label">Trial 1 of 24</span>
+    <span id="phase-badge" class="badge badge-info">Practice</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%"></div></div>
+  <div id="task-area">
+    <span class="fixation" id="fix-cross">+</span>
+    <div class="face-stimulus face-left" id="face-L" style="display:none"></div>
+    <div class="face-stimulus face-right" id="face-R" style="display:none"></div>
+    <div class="probe probe-left" id="probe-L" style="display:none">&#9670;</div>
+    <div class="probe probe-right" id="probe-R" style="display:none">&#9670;</div>
+  </div>
+  <div id="feedback-msg"></div>
+  <div style="display:flex;justify-content:center;gap:32px;margin-top:1rem">
+    <button class="key-btn" id="btn-f" onclick="handleResponse('left')">F<br><span style="font-size:10px;color:#666">left</span></button>
+    <button class="key-btn" id="btn-j" onclick="handleResponse('right')">J<br><span style="font-size:10px;color:#666">right</span></button>
+  </div>
+</div>
+
+<div id="s-break" class="screen" style="text-align:center">
+  <div style="padding:2rem 0">
+    <div style="font-size:36px;margin-bottom:1rem">&#9749;</div>
+    <h2>Practice complete</h2>
+    <p>You are ready to begin the main task.</p>
+    <p id="break-msg">The session will now begin.</p>
+    <div style="margin-top:1.5rem">
+      <button class="btn btn-primary" onclick="startMainTask()">Begin main task</button>
+    </div>
+  </div>
+</div>
+
+<div id="s-done" class="screen" style="text-align:center">
+  <div style="padding:1rem 0">
+    <div style="font-size:36px;margin-bottom:1rem">&#10003;</div>
+    <h2>Session complete</h2>
+    <p>Thank you for completing the task. Your results are shown below.</p>
+    <hr class="divider">
+    <div class="grid3" style="margin-bottom:1.5rem" id="summary-stats"></div>
+    <div class="card" style="text-align:left">
+      <h3>Attention bias score (ABS)</h3>
+      <p>ABS = RT(incongruent) minus RT(congruent). Positive = bias toward threat.</p>
+      <div style="font-size:28px;font-weight:500;text-align:center;margin:1rem 0" id="abs-display">-</div>
+      <div style="font-size:12px;color:#666;text-align:center" id="abs-interp"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:1rem;justify-content:center">
+      <button class="btn btn-primary" onclick="showScreen('s-results')">View full results</button>
+      <button class="btn" onclick="exportCSV()">Export CSV</button>
+      <button class="btn" onclick="resetAll()">New session</button>
+    </div>
+  </div>
+</div>
+
+<div id="s-results" class="screen">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+    <h2 style="margin:0">Results dashboard</h2>
+    <div style="display:flex;gap:8px">
+      <button class="btn" onclick="exportCSV()">Export CSV</button>
+      <button class="btn" onclick="showScreen('s-welcome')">New session</button>
+    </div>
+  </div>
+  <div class="tab-nav">
+    <button class="tab active" onclick="switchTab('t-summary')">Summary</button>
+    <button class="tab" onclick="switchTab('t-trials')">Trial log</button>
+    <button class="tab" onclick="switchTab('t-rt')">RT chart</button>
+  </div>
+  <div id="t-summary" class="tab-panel active"></div>
+  <div id="t-trials" class="tab-panel"></div>
+  <div id="t-rt" class="tab-panel"></div>
+</div>
+
+<script>
+const FACES={threat:[{label:'Threat',emoji:'😠',color:'#FCEBEB',border:'#E24B4A',text:'#A32D2D'},{label:'Threat',emoji:'😨',color:'#FCEBEB',border:'#E24B4A',text:'#A32D2D'},{label:'Threat',emoji:'😡',color:'#FCEBEB',border:'#E24B4A',text:'#A32D2D'}],neutral:[{label:'Neutral',emoji:'😐',color:'#F1EFE8',border:'#888780',text:'#5F5E5A'},{label:'Neutral',emoji:'😶',color:'#F1EFE8',border:'#888780',text:'#5F5E5A'},{label:'Neutral',emoji:'🙂',color:'#F1EFE8',border:'#888780',text:'#5F5E5A'}]};
+let cfg={},trialList=[],trialIdx=0,trialData=[],isPractice=true,probeOnset=0,probePos='',taskActive=false,taskTimer=null;
+function rand(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function randBool(){return Math.random()<0.5;}
+function makeTrial(isABM){const threatLeft=randBool(),tf=rand(FACES.threat),nf=rand(FACES.neutral),probeOnThreat=isABM?false:randBool(),probeLeft=threatLeft?probeOnThreat:!probeOnThreat;return{threatLeft,tf,nf,probeOnThreat,probeLeft};}
+function buildTrialList(n,stype){const isABM=stype==='abm',list=[];for(let i=0;i<n;i++)list.push(makeTrial(isABM));return list;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');if(id==='s-results')renderResults();}
+function startInstructions(){const pid=document.getElementById('pid').value.trim();if(!pid){alert('Please enter a participant ID.');return;}cfg={pid,age:document.getElementById('page').value,gender:document.getElementById('pgender').value,stype:document.getElementById('stype').value,soa:parseInt(document.getElementById('soa').value),ntrials:parseInt(document.getElementById('ntrials').value),date:new Date().toISOString()};showScreen('s-instructions');}
+function startPractice(){isPractice=true;trialList=buildTrialList(3,'assess');trialIdx=0;document.getElementById('phase-badge').textContent='Practice';document.getElementById('phase-badge').className='badge badge-warn';showScreen('s-task');runTrial();}
+function startMainTask(){isPractice=false;trialData=[];trialList=buildTrialList(cfg.ntrials,cfg.stype);trialIdx=0;document.getElementById('phase-badge').textContent=cfg.stype==='abm'?'ABM training':'Assessment';document.getElementById('phase-badge').className='badge badge-info';showScreen('s-task');runTrial();}
+function runTrial(){if(trialIdx>=trialList.length){endPhase();return;}const t=trialList[trialIdx],n=trialList.length;document.getElementById('trial-label').textContent=`Trial ${trialIdx+1} of ${n}`;document.getElementById('prog').style.width=`${Math.round(trialIdx/n*100)}%`;document.getElementById('feedback-msg').textContent='';taskActive=false;hide('face-L');hide('face-R');hide('probe-L');hide('probe-R');show('fix-cross');clearTimeout(taskTimer);taskTimer=setTimeout(()=>{hide('fix-cross');setFace('face-L',t.threatLeft?t.tf:t.nf);setFace('face-R',t.threatLeft?t.nf:t.tf);show('face-L');show('face-R');taskTimer=setTimeout(()=>{hide('face-L');hide('face-R');probePos=t.probeLeft?'left':'right';const pEl=t.probeLeft?'probe-L':'probe-R';document.getElementById(pEl).textContent=randBool()?'◆':'◇';show(pEl);probeOnset=performance.now();taskActive=true;taskTimer=setTimeout(()=>{if(taskActive)recordResponse(null,null);},2000);},cfg.soa||500);},500);}
+function setFace(id,f){const el=document.getElementById(id);el.style.background=f.color;el.style.border=`2px solid ${f.border}`;el.innerHTML=`<span style="font-size:40px">${f.emoji}</span><span style="color:${f.text};font-size:10px;margin-top:4px">${f.label}</span>`;}
+function hide(id){const el=document.getElementById(id);if(el)el.style.display='none';}
+function show(id){const el=document.getElementById(id);if(el)el.style.display=(id==='fix-cross'?'block':'flex');}
+function handleResponse(side){if(!taskActive)return;recordResponse(side,performance.now()-probeOnset);}
+function recordResponse(side,rt){taskActive=false;clearTimeout(taskTimer);hide('probe-L');hide('probe-R');const t=trialList[trialIdx],correct=side===probePos;if(!isPractice){trialData.push({trial:trialIdx+1,threatLeft:t.threatLeft,probeOnThreat:t.probeOnThreat,probePos,response:side,rt:rt?Math.round(rt):null,correct:rt?correct:false,timeout:!rt});}if(isPractice){document.getElementById('feedback-msg').textContent=!rt?'Too slow - please respond faster':correct?'Correct!':'Incorrect - press F for left, J for right';}trialIdx++;setTimeout(runTrial,isPractice?900:400);}
+function endPhase(){if(isPractice){document.getElementById('break-msg').textContent=`Ready to begin ${cfg.ntrials} trials.`;showScreen('s-break');}else{computeAndShowResults();showScreen('s-done');}}
+function computeABS(){const valid=trialData.filter(d=>d.correct&&d.rt&&d.rt>150&&d.rt<2000),congruent=valid.filter(d=>d.probeOnThreat),incongruent=valid.filter(d=>!d.probeOnThreat),avg=arr=>arr.length?Math.round(arr.reduce((s,d)=>s+d.rt,0)/arr.length):null,rtC=avg(congruent),rtI=avg(incongruent),abs=(rtC!==null&&rtI!==null)?rtI-rtC:null;return{rtC,rtI,abs,nValid:valid.length,nTotal:trialData.length,acc:trialData.length?Math.round(trialData.filter(d=>d.correct).length/trialData.length*100):0};}
+function computeAndShowResults(){const r=computeABS();document.getElementById('summary-stats').innerHTML=`<div class="stat"><div class="stat-label">Accuracy</div><div class="stat-value">${r.acc}%</div></div><div class="stat"><div class="stat-label">Valid trials</div><div class="stat-value">${r.nValid}/${r.nTotal}</div></div><div class="stat"><div class="stat-label">Mean RT</div><div class="stat-value">${r.rtC||'-'} ms</div></div>`;const absEl=document.getElementById('abs-display'),interpEl=document.getElementById('abs-interp');if(r.abs!==null){absEl.textContent=`ABS = ${r.abs} ms`;absEl.style.color=r.abs>0?'#dc2626':r.abs<0?'#16a34a':'#666';interpEl.textContent=r.abs>15?'Attention bias toward threat detected':r.abs<-15?'Attention bias away from threat detected':'No significant attentional bias';}else{absEl.textContent='Insufficient valid trials';}}
+function renderResults(){const r=computeABS();document.getElementById('t-summary').innerHTML=`<div class="grid3" style="margin-bottom:1.5rem"><div class="stat"><div class="stat-label">Participant</div><div class="stat-value" style="font-size:16px">${cfg.pid||'-'}</div></div><div class="stat"><div class="stat-label">Session type</div><div class="stat-value" style="font-size:14px">${cfg.stype||'-'}</div></div><div class="stat"><div class="stat-label">SOA</div><div class="stat-value">${cfg.soa||'-'} ms</div></div></div><div class="grid3" style="margin-bottom:1.5rem"><div class="stat"><div class="stat-label">Accuracy</div><div class="stat-value">${r.acc}%</div></div><div class="stat"><div class="stat-label">RT congruent</div><div class="stat-value">${r.rtC||'-'} ms</div></div><div class="stat"><div class="stat-label">RT incongruent</div><div class="stat-value">${r.rtI||'-'} ms</div></div></div><div class="card"><h3>Attention bias score</h3><p>ABS = RT(incongruent) minus RT(congruent). Positive = bias toward threat.</p><div style="font-size:26px;font-weight:500;text-align:center;margin:1rem 0;color:${r.abs>0?'#dc2626':r.abs<0?'#16a34a':'#666'}">${r.abs!==null?r.abs+' ms':'Insufficient data'}</div>${r.abs!==null?`<p style="text-align:center">${r.abs>15?'Bias toward threat detected':r.abs<-15?'Bias away from threat detected':'No significant bias'}</p>`:''}</div>`;
+const rows=trialData.slice(-20).map(d=>`<div class="trial-row"><span style="color:#666">#${d.trial}</span><span>${d.threatLeft?'Threat L':'Threat R'}</span><span>${d.probeOnThreat?'Congruent':'Incongruent'}</span><span style="color:${d.correct?'#16a34a':'#dc2626'}">${d.timeout?'Timeout':d.correct?'Correct':'Wrong'}</span><span>${d.rt?d.rt+' ms':'-'}</span></div>`).join('');
+document.getElementById('t-trials').innerHTML=`<p style="margin-bottom:0.75rem;font-size:12px;color:#666">Showing last 20 trials</p><div style="border:0.5px solid #ddd;border-radius:8px;padding:0 1rem"><div class="trial-row" style="font-weight:500;font-size:12px"><span>Trial</span><span>Position</span><span>Type</span><span>Result</span><span>RT</span></div>${rows||'<p style="padding:1rem;color:#666">No trials completed yet.</p>'}</div>`;
+const rtBins={'0-200':0,'200-400':0,'400-600':0,'600-800':0,'800-1000':0,'1000+':0};trialData.filter(d=>d.rt&&d.correct).forEach(d=>{if(d.rt<=200)rtBins['0-200']++;else if(d.rt<=400)rtBins['200-400']++;else if(d.rt<=600)rtBins['400-600']++;else if(d.rt<=800)rtBins['600-800']++;else if(d.rt<=1000)rtBins['800-1000']++;else rtBins['1000+']++;});
+const maxB=Math.max(...Object.values(rtBins),1),bars=Object.entries(rtBins).map(([k,v])=>`<div style="flex:1;text-align:center"><div style="height:${Math.round(v/maxB*70)+4}px;background:#93c5fd;border-radius:3px 3px 0 0;min-height:4px"></div><div style="font-size:10px;color:#666;margin-top:4px">${k}</div><div style="font-size:11px;font-weight:500">${v}</div></div>`).join('');
+document.getElementById('t-rt').innerHTML=`<div class="card"><h3>RT distribution (correct trials)</h3><p>Reaction time bins in milliseconds</p><div style="display:flex;align-items:flex-end;gap:6px;height:90px;margin-top:1rem">${bars}</div></div>`;}
+function switchTab(id){document.querySelectorAll('.tab').forEach((t,i)=>{const ids=['t-summary','t-trials','t-rt'];t.classList.toggle('active',ids[i]===id);});document.querySelectorAll('.tab-panel').forEach(p=>{p.classList.toggle('active',p.id===id);});}
+function exportCSV(){if(!trialData.length){alert('No trial data to export.');return;}const hdr=['participant_id','age','gender','session_type','soa_ms','date','trial','threat_left','probe_on_threat','probe_position','response','rt_ms','correct','timeout'],rows=trialData.map(d=>[cfg.pid,cfg.age,cfg.gender,cfg.stype,cfg.soa,cfg.date,d.trial,d.threatLeft,d.probeOnThreat,d.probePos,d.response||'',d.rt||'',d.correct,d.timeout].join(',')),csv=[hdr.join(','),...rows].join('\n'),a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=`ABM_${cfg.pid}_${new Date().toISOString().slice(0,10)}.csv`;a.click();}
+function resetAll(){trialData=[];cfg={};trialList=[];trialIdx=0;isPractice=true;document.getElementById('pid').value='';document.getElementById('page').value='';showScreen('s-welcome');}
+document.addEventListener('keydown',e=>{if(e.key==='f'||e.key==='F'){handleResponse('left');document.getElementById('btn-f').classList.add('pressed');setTimeout(()=>document.getElementById('btn-f').classList.remove('pressed'),150);}if(e.key==='j'||e.key==='J'){handleResponse('right');document.getElementById('btn-j').classList.add('pressed');setTimeout(()=>document.getElementById('btn-j').classList.remove('pressed'),150);}});
+</script>
+</body>
+</html>
